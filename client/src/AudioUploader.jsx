@@ -5,6 +5,7 @@ import axios from 'axios'
 const AudioUploader = () => {
     const [file, setFile] = useState(null);
     const [transcription, setTranscription] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -13,6 +14,7 @@ const AudioUploader = () => {
 
     const handleUpload = async () => {
         if (!file) return;
+        setIsLoading(true);
 
         const formData = new FormData();
         formData.append('file', file);
@@ -27,6 +29,8 @@ const AudioUploader = () => {
             setTranscription(response.data);
         } catch (error) {
             console.error('Error transcribing audio:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -36,7 +40,10 @@ const AudioUploader = () => {
     <div className='file-input'>
         <input type='file' accept='audio/*' onChange={handleFileChange} />
         </div>
-        <button className='upload-button' onClick={handleUpload}>Upload Audio</button>
+        <button 
+        className='upload-button' onClick={handleUpload} disabled={isLoading}>{isLoading ? 'Uploading ...': 'Upload Audio'}
+
+        </button>
         <div className='transcription-result'>
             <h2>Transcription Result</h2>
             <p>{transcription}</p>
